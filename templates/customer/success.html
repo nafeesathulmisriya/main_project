@@ -1,0 +1,10 @@
+{% extends 'customer/customerbase.html' %}
+
+{% block content %}
+<div class="container text-center">
+    <h2>Success!</h2>
+    <p>Your vehicle insurance application has been submitted successfully.</p>
+    <a href="{% url 'vehicle-insurance' %}" class="btn btn-primary">Apply for Another</a>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
+</div>
+{% endblock %}

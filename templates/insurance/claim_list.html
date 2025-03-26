@@ -1,0 +1,6 @@
+{% for claim in claims %}
+    <p>{{ claim.policy_number }} - {{ claim.claimant_name }} - {{ claim.status }}</p>
+    <a href="{% url 'update_claim' claim.id %}">Edit</a>
+    <a href="{% url 'delete_claim' claim.id %}">Delete</a>
+{% endfor %}
+<a href="{% url 'add_claim' %}">Add Claim</a>
