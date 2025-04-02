@@ -12,8 +12,11 @@ from django.contrib.auth.models import User
 from customer import models as CMODEL
 from django.contrib import messages
 from customer import forms as CFORM
-from .models import Claim
-from .forms import ClaimForm 
+from customer.models import Claims
+
+
+
+
 
 def home_view(request):
     if request.user.is_authenticated:
@@ -284,53 +287,36 @@ def contactus_success_view(request):
 
 
 
+from django.http import JsonResponse
+
+def claim_list_admin(request):
+    claims = Claims.objects.all()
+    return render(request, "insurance/claim_list_admin.html", {"claims": claims})
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from customer.models import Claims  # Ensure the model is correctly imported
+
+@csrf_exempt  # Disable CSRF for simplicity (only if using AJAX)
+def update_claim_status(request, claim_id, new_status):
+    if request.method == 'POST':  # Ensure it's a POST request
+        try:
+            claim = Claims.objects.get(id=claim_id)
+            claim.status = new_status
+            claim.save()
+            return JsonResponse({'success': True, 'new_status': new_status})
+        except Claims.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Claim not found'}, status=404)
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
 
 
-
-def admin_approve_claim(request, claim_id):
-    claim = get_object_or_404(Claim, id=claim_id)
-    claim.status = "Approved"
-    claim.save()
-    return redirect('admin-view-claims')
-
-def admin_reject_claim(request, claim_id):
-    claim = get_object_or_404(Claim, id=claim_id)
-    claim.status = "Rejected"
-    claim.save()
-    return redirect('admin-view-claims')
-
-def claim_list(request):
-    claims = Claim.objects.all()
-    return render(request, 'insurance/claim_list.html', {'claims': claims})
-
-def add_claim(request):
-    if request.method == "POST":
-        form = ClaimForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('claim_list')
-    else:
-        form = ClaimForm()
-    return render(request, 'insurance/add_claim.html', {'form': form})
-
-def update_claim(request, claim_id):
-    claim = get_object_or_404(Claim, id=claim_id)
-    if request.method == "POST":
-        form = ClaimForm(request.POST, instance=claim)
-        if form.is_valid():
-            form.save()
-            return redirect('claim_list')
-    else:
-        form = ClaimForm(instance=claim)
-    return render(request, 'insurance/update_claim.html', {'form': form})
-
-def delete_claim(request, claim_id):
-    claim = get_object_or_404(Claim, id=claim_id)
-    if request.method == "POST":
-        claim.delete()
-        return redirect('claim_list')
-    return render(request, 'insurance/delete_claim.html', {'claim': claim})
-
+def admin_dashboard(request):
+    total_claims = Claims.objects.count()
+    context = {
+        "total_claims": total_claims,
+        # Other context variables (total_user, total_policy, etc.)
+    }
+    return render(request, "insurance/admin_dashboard.html", context)
 
 

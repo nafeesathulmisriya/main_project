@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render,redirect,reverse
 from . import forms,models
 from django.db.models import Sum
@@ -6,8 +7,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from datetime import date, timedelta
-from .forms import ClaimForm
-from insurance.models import Claim
 from django.db.models import Q
 from insurance.models import Category
 from django.core.mail import send_mail
@@ -16,6 +15,8 @@ from insurance import forms as CFORM
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from .forms import ClaimForm
+
 
 
 
@@ -125,20 +126,55 @@ def customer_view_categories(request):
 def success_view(request):
     return render(request, 'customer/success.html')
 
-
-
 def upload_claim(request):
     if request.method == "POST":
         form = ClaimForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return render(request, 'customer/upload_success.html', {"policy_number": form.cleaned_data["policy_number"]})
+            claim = form.save()
+            messages.success(request, "Your claim has been submitted successfully!")
+            return redirect("success_page", policy_number=claim.policy_number)  # ✅ Pass policy_number
     else:
         form = ClaimForm()
-    return render(request, 'customer/upload_claim.html', {"form": form})
+    
+    return render(request, "customer/upload_claim.html", {"form": form})
+
+def success_page(request, policy_number):
+    return render(request, "customer/success.html", {"policy_number": policy_number})
+
+
+from django.shortcuts import render
+from .models import Claims  # Import your Claim model
+
+def claim_list(request):
+    claims = Claims.objects.all()  # Fetch all claims
+    return render(request, "customer/claim_list.html", {"claims": claims})
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Claims  # Import the Claim model
+
+@login_required
+def my_claims(request):
+    claims = Claims.objects.filter(user=request.user)  # Get logged-in user's claims
+    return render(request, 'customer/my_claims.html', {'claims': claims})
 
 
 
+from django.shortcuts import render
+from django.http import JsonResponse
 
+def claim_status(request):
+    policy_number = request.GET.get("policy_number")
 
+    if not policy_number:
+        return JsonResponse({"success": False, "error": "Policy number is required"}, status=400)
+
+    claims = Claims.objects.filter(policy_number=policy_number).values(
+        "policy_number", "claim_amount", "status", "submitted_at", "admin_comment"
+    )
+
+    if claims:
+        return JsonResponse({"success": True, "claims": list(claims)})
+    else:
+        return JsonResponse({"success": False, "error": "No claims found for this policy number"}, status=404)
 

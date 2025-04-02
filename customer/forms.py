@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from insurance.models import Claim
 from . import models
-from .models import Claim
+from .models import Claims
 
 
 class CustomerUserForm(forms.ModelForm):
@@ -20,5 +19,5 @@ class CustomerForm(forms.ModelForm):
         
 class ClaimForm(forms.ModelForm):
     class Meta:
-        model = Claim
-        fields = ["policy_number", "claim_reason", "claim_amount", "supporting_document"]
+        model = Claims
+        fields = ["policy_number", "claim_reason", "claim_amount", "supporting_document","status"]

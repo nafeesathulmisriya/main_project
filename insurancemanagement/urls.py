@@ -6,6 +6,8 @@ from django.urls import path,include
 
 
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('customer/',include('customer.urls')),
@@ -52,3 +54,12 @@ urlpatterns = [
     path('update-question/<int:pk>', views.update_question_view,name='update-question'),
 
 ]
+from django.conf.urls.static import static
+from django.conf import settings
+
+
+
+# ✅ Serve media files in development mode
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -173,13 +173,12 @@
   <!--header area end-->
   <!--sidebar start-->
   <div class="sidebar" style="margin-top:60px;">
-    <center>
-
-      <img src="{% static customer.profile_pic.url %}" class="profile_image" alt="">
-      <h4>{{request.user.first_name}}</h4>
+    <div style="text-align: center;">
+      <img src="{% static 'profile_pic/Customer/pr2.jpg' %}" class="profile_image" alt="">
+      <h4>{{ request.user.first_name }}</h4>
       <h6 style="color: rgb(255, 255, 255);">( Customer )</h6>
-
-    </center>
+  </div>
+  
 
     <a href="/customer/customer-dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
     <a href="/customer/apply-policy"><i class="fab fa-product-hunt"></i><span>Apply Policy</span></a>
@@ -187,7 +186,7 @@
 
     <a href="/customer/ask-question"><i class="fas fa-question-circle"></i><span>Ask Question</span></a>
     <a href="/customer/question-history"><i class="fas fa-sync-alt"></i><span>Question History</span></a>
-    <a href="/customer/upload-claim"><i class="fas fa-upload"></i><span>Upload Claim</span></a>
+    <a href="/customer/upload_claim"><i class="fas fa-upload"></i><span>Upload Claim</span></a>
 
   </div>
   <!--sidebar end-->

@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.models import User
-from insurance.models import Claim
 from . import models
 
 class ContactusForm(forms.Form):
@@ -27,17 +26,3 @@ class QuestionForm(forms.ModelForm):
         widgets = {
         'description': forms.Textarea(attrs={'rows': 6, 'cols': 30})
         }
-
-
-
-from django import forms
-from .models import Claim
-
-class ClaimForm(forms.ModelForm):
-    class Meta:
-        model = Claim
-        fields = ['policy_number', 'claimant_name', 'claim_amount', 'status']
-
-
-
-
